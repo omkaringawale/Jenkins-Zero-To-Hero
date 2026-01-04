@@ -19,15 +19,12 @@ pipeline {
         sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
       }
     }
-    stage('Static Code Analysis') {
+   stage('Static Code Analysis') {
   steps {
-    withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+    withsonarqubeEnv('sonarqube') {
       sh '''
         cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
-        mvn clean verify \
-          org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
-          -Dsonar.login=$SONAR_AUTH_TOKEN \
-          -Dsonar.host.url=http://192.168.1.7:9000
+        mvn sonar:sonar
       '''
     }
   }
