@@ -20,25 +20,18 @@ pipeline {
       }
     }
     stage('Static Code Analysis') {
-      environment {
-        SONAR_URL = "http://192.168.1.7:9000"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-        sh '''
-        set -x
+  steps {
+    withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+      sh '''
         cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
-
-        echo "Testing SonarQube connectivity..."
-        curl -I $SONAR_URL
-
-        mvn sonar:sonar \
+        mvn clean verify \
+          org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
           -Dsonar.login=$SONAR_AUTH_TOKEN \
-          -Dsonar.host.url=$SONAR_URL
+          -Dsonar.host.url=http://192.168.1.7:9000
       '''
-        }
-      }
     }
+  }
+}
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "abhishekf5/ultimate-cicd:${BUILD_NUMBER}"
