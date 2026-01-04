@@ -21,7 +21,7 @@ pipeline {
     }
    stage('Static Code Analysis') {
   steps {
-    withsonarqubeEnv('sonarqube') {
+    withSonarQubeEnv('SonarQube') {
       sh '''
         cd java-maven-sonar-argocd-helm-k8s/spring-boot-app
         mvn sonar:sonar
